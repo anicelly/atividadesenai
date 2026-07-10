@@ -1,0 +1,184 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Reino Pixel Extremo</title>
+  <link rel="stylesheet" href="style.css?v=18">
+</head>
+<body>
+  <main class="app">
+    <section class="topbar" aria-label="Painel do jogo">
+      <div>
+        <span class="kicker">Arena de combate 90s</span>
+        <h1>Reino Pixel Extremo</h1>
+      </div>
+
+      <div class="controls" aria-label="Controles">
+        <span><strong>P1</strong> A/D/W/S + X</span>
+        <span><strong>P2</strong> Setas + Enter</span>
+        <span><strong>Ritmo</strong> brutal</span>
+        <span><strong>Celular</strong> escolha personagem e entre na arena</span>
+        <span id="deviceMode" class="device-mode"><strong>Modo</strong> detectando...</span>
+      </div>
+    </section>
+
+    <section class="stage">
+      <canvas id="game" width="960" height="540" aria-label="Jogo Reino Pixel Extremo"></canvas>
+
+      <div class="party-panel" aria-label="Grupo de aventureiros">
+        <div class="party-member">
+          <span class="party-badge p1">P1</span>
+          <div><strong id="partyP1">Joao</strong><small>Lutador principal</small></div>
+        </div>
+        <div class="party-member">
+          <span class="party-badge p2">P2</span>
+          <div><strong id="partyP2">Luquinhas</strong><small id="partyMode">Aguardando parceiro</small></div>
+        </div>
+        <div class="xp-panel">
+          <div><span id="levelLabel">NÍVEL 1</span><strong id="xpLabel">0 / 100 XP</strong></div>
+          <div class="xp-track"><span id="xpFill"></span></div>
+        </div>
+      </div>
+
+      <div class="mission-panel" aria-label="Missão atual">
+        <div class="mission-main">
+          <span class="mission-eyebrow">MISSÃO ATUAL</span>
+          <strong id="missionObjective">Carregando objetivo...</strong>
+          <small id="missionHint">Prepare-se para a batalha.</small>
+        </div>
+        <div class="mission-stat"><span>PROGRESSO</span><strong id="missionProgress">0/0</strong></div>
+        <div class="mission-stat accent"><span>RITMO</span><strong id="missionCombo">NORMAL</strong></div>
+        <div class="mission-stat"><span>PRÊMIOS</span><strong id="missionRewards">0 ◉ · 0 ◆</strong></div>
+      </div>
+
+      <div class="status">
+        <strong id="mensagem">Fase 1</strong>
+        <div class="actions">
+          <label class="p2-select" for="player2Character">P2
+            <select id="player2Character" aria-label="Escolher personagem do jogador 2">
+              <option value="luquinhas">Luquinhas</option>
+              <option value="joao">Joao</option>
+              <option value="cr7">CR7</option>
+              <option value="yoshi">Yoshi</option>
+              <option value="harry">Harry Potter</option>
+              <option value="rangerVermelho">Power Ranger Vermelho</option>
+              <option value="ancelotti">Carlo Ancelotti</option>
+              <option value="neymar">Neymar</option>
+              <option value="goku">Goku</option>
+              <option value="sailorMoon">Sailor Moon</option>
+              <option value="cazetv">Caze TV</option>
+              <option value="viniciusJunior">Vinicius Jr.</option>
+              <option value="virginia">Virginia</option>
+              <option value="gravidaTaubate">Gravida de Taubate</option>
+              <option value="meninoRoblox">Menino Roblox</option>
+              <option value="chaves">Chaves</option>
+              <option value="esqueleto">Esqueleto</option>
+              <option value="silvioSantos">Silvio Santos</option>
+            </select>
+          </label>
+          <button type="button" onclick="alternarLoja()" id="botaoLoja">Loja</button>
+          <button type="button" onclick="alternarMultiplayer()" id="botaoMultiplayer">2 jogadores: não</button>
+          <button type="button" onclick="alternarModoVersus()" id="botaoVersus">Modo: campanha</button>
+          <button type="button" onclick="alternarPausa()" id="botaoPausa">Pausar</button>
+          <button type="button" onclick="alternarTelaCheia()" id="botaoTelaCheia">Tela cheia</button>
+          <button type="button" onclick="alternarSom()" id="botaoSom">Som: ligado</button>
+          <button type="button" onclick="reiniciarJogo()">Reiniciar</button>
+        </div>
+      </div>
+    </section>
+
+    <section class="shop" id="loja" aria-label="Loja de sobrevivência" hidden>
+      <div class="shop-heading">
+        <div>
+          <span class="kicker">Loja do fliperama</span>
+          <h2>Melhorias do Fliperama</h2>
+          <p id="saldoLoja">Carregando carteira...</p>
+        </div>
+        <button type="button" class="shop-close" onclick="alternarLoja()">Fechar</button>
+      </div>
+      <div class="shop-grid">
+        <article class="shop-card">
+          <span class="shop-icon">♥</span>
+          <h3>Vida extra</h3>
+          <p>Garante mais uma chance na arena.</p>
+          <button type="button" onclick="comprarItemLoja('vida')">30 moedas</button>
+        </article>
+        <article class="shop-card">
+          <span class="shop-icon">+10</span>
+          <h3>Tempo extra</h3>
+          <p>Soma 10 segundos ao próximo combate de chefe.</p>
+          <button type="button" onclick="comprarItemLoja('tempo')">20 moedas</button>
+        </article>
+        <article class="shop-card featured">
+          <span class="shop-icon">◆</span>
+          <h3>Kit sobrevivência</h3>
+          <p>1 vida e mais 15 segundos para o próximo chefe.</p>
+          <button type="button" onclick="comprarItemLoja('kit')">3 diamantes</button>
+        </article>
+      </div>
+      <p class="shop-feedback" id="avisoLoja" aria-live="polite"></p>
+    </section>
+
+    <section class="touch-controls" aria-label="Controles para celular">
+      <div class="picker-heading">
+        <div>
+          <span class="kicker">Elenco dos lutadores</span>
+          <strong>Escolha seu campeão</strong>
+        </div>
+        <span class="picker-count">19 personagens</span>
+      </div>
+
+      <div class="fighter-profile" id="fighterProfile">
+        <span class="fighter-avatar" id="fighterAvatar">P1</span>
+        <div>
+          <strong id="fighterName">Joao</strong>
+          <p id="fighterPower">Lutador equilibrado · combo corpo a corpo</p>
+        </div>
+        <div class="fighter-stats">
+          <span>FORÇA <b id="fighterStrength">7</b></span>
+          <span>VELOCIDADE <b id="fighterSpeed">7</b></span>
+          <span>ESPECIAL <b id="fighterSpecial">6</b></span>
+        </div>
+      </div>
+
+      <div class="player-picker" aria-label="Escolher personagem">
+        <button type="button" class="player-choice is-selected" data-character="joao">Joao</button>
+        <button type="button" class="player-choice" data-character="cr7">CR7</button>
+        <button type="button" class="player-choice" data-character="yoshi">Yoshi</button>
+        <button type="button" class="player-choice" data-character="harry">Harry Potter</button>
+        <button type="button" class="player-choice" data-character="rangerVermelho">Power Ranger Vermelho</button>
+        <button type="button" class="player-choice" data-character="ancelotti">Carlo Ancelotti</button>
+        <button type="button" class="player-choice" data-character="neymar">Neymar</button>
+        <button type="button" class="player-choice" data-character="goku">Goku</button>
+        <button type="button" class="player-choice" data-character="sailorMoon">Sailor Moon</button>
+        <button type="button" class="player-choice" data-character="cazetv">Caze TV</button>
+        <button type="button" class="player-choice" data-character="viniciusJunior">Vinicius Jr.</button>
+        <button type="button" class="player-choice" data-character="virginia">Virginia</button>
+        <button type="button" class="player-choice" data-character="gravidaTaubate">Gravida de Taubate</button>
+        <button type="button" class="player-choice" data-character="meninoRoblox">Menino Roblox</button>
+        <button type="button" class="player-choice" data-character="chaves">Chaves</button>
+        <button type="button" class="player-choice" data-character="esqueleto">Esqueleto</button>
+        <button type="button" class="player-choice" data-character="silvioSantos">Silvio Santos</button>
+      </div>
+
+      <div class="touch-pad">
+        <span id="activePlayerLabel">Personagem: Joao</span>
+        <div class="mobile-gamepad">
+          <div class="direction-pad" aria-label="Direcional">
+            <button type="button" class="touch-btn dir left" data-action="left" aria-label="Esquerda">&larr;</button>
+            <div class="dpad-center" aria-hidden="true"></div>
+            <button type="button" class="touch-btn dir right" data-action="right" aria-label="Direita">&rarr;</button>
+          </div>
+
+          <button type="button" class="touch-btn jump action-jump" data-action="jump" aria-label="Pular">PULAR</button>
+          <button type="button" class="touch-btn crouch action-crouch" data-action="down" aria-label="Abaixar">ABAIXAR</button>
+          <button type="button" class="touch-btn attack action-attack" data-action="attack" aria-label="Usar poder ou golpear">PODER / ATAQUE</button>
+        </div>
+      </div>
+    </section>
+  </main>
+
+  <script src="script.js?v=44"></script>
+</body>
+</html>
